@@ -10,11 +10,8 @@ function sendJson(socket, payload) {
 
 function broadcast(wss, payload) {
   for (const client of wss.clients) {
-    if (client.readyState !== WebSocket.OPEN) {
-      return;
-    }
-
-    socket.send(JSON.stringify(payload));
+    // sendJson() already checks readyState and serializes payload.
+    sendJson(client, payload);
   }
 }
 
@@ -22,7 +19,7 @@ export function attachWebSocketServer(server) {
   const wss = new WebSocketServer({
     server,
     path: "/ws",
-    maxPayload: 1024 * 124,
+    maxPayload: 1024 * 128,
   });
 
   wss.on("connection", (socket) => {
