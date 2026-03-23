@@ -67,6 +67,8 @@ matchesRouter.post("/", async (req, res) => {
 
     res.status(201).json({ data: event });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    // Avoid leaking internal details to the client; log for debugging instead.
+    console.error(err);
+    return res.status(500).json({ error: "Internal server error" });
   }
 });

@@ -21,10 +21,15 @@ const { broadcastMatchCreated } = attachWebSocketServer(server);
 app.locals.broadcastMatchCreated = broadcastMatchCreated;
 
 server.listen(PORT, HOST, () => {
-  const baseUrl =
-    HOST === "0.0.0.0" ? `http://localhost:${PORT}` : `wss://${HOST}:${PORT}`;
+  const isTls =
+    process.env.USE_TLS === "true" || process.env.NODE_ENV === "production";
+  const protocol = isTls ? "https" : "http";
+  const wsProtocol = protocol === "https" ? "wss" : "ws";
+  const hostForUrl = HOST === "0.0.0.0" ? "localhost" : HOST;
+
+  const baseUrl = `${protocol}://${hostForUrl}:${PORT}`;
+  const wsUrl = `${wsProtocol}://${hostForUrl}:${PORT}/ws`;
+
   console.log(`Server is running on ${baseUrl}`);
-  console.log(
-    `WebSocket Server is running on ${baseUrl.replace("http", "ws")}/ws`,
-  );
+  console.log(`WebSocket Server is running on ${wsUrl}`);
 });
